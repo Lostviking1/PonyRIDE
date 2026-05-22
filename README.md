@@ -18,15 +18,20 @@
 
 ## Форма
 
-Укажите Google Apps Script endpoint в `formEndpoint`:
+Браузер отправляет заявку в Vercel Function `POST /api/booking`. Она проверяет обязательные поля, передает JSON в Google Apps Script и возвращает форме подтвержденный результат записи.
 
-```js
-formEndpoint: "https://script.google.com/macros/s/REPLACE_ME/exec"
-```
+Payload содержит поля `name`, `phone`, `model`, `rentalTerm`, `rentalPurpose`, `fromBashkortostanCity`, `city`, `comment`, `consent`, `source`, `submittedAt`.
 
-Сайт отправляет JSON payload с полями `name`, `phone`, `model`, `rentalTerm`, `rentalPurpose`, `fromBashkortostanCity`, `city`, `comment`, `consent`, `source`, `submittedAt`.
+1. Замените код Apps Script на содержимое `google-apps-script/booking.gs`.
+2. Разверните Apps Script как Web App и скопируйте URL `/exec`.
+3. В Vercel задайте env var `GOOGLE_APPS_SCRIPT_URL` с этим URL. Шаблон есть в `.env.example`.
+4. Проверьте тестовую заявку на опубликованном preview/production URL.
 
-Если endpoint пустой, `fetch` не запускается и пользователь видит сообщение с предложением написать в Telegram или позвонить.
+Apps Script пишет в таблицу с ID `1NRYYeSLX6UH2dXW2GS5DxMLblYqTwDzLXednwVExYgs`, в текущий лист `Лист1`. Если в первой строке нет полного набора колонок, скрипт заполнит заголовки:
+
+`Дата получения`, `Имя`, `Телефон`, `Модель`, `Срок аренды`, `Цель`, `Из другого города РБ`, `Город`, `Комментарий`, `Согласие`, `Источник`, `Дата с сайта`.
+
+Обычный локальный `python -m http.server` показывает статику, но не исполняет `/api/booking`. Для проверки API используйте Vercel preview/deploy или локальный runtime Vercel.
 
 ## Изображения
 
@@ -35,7 +40,7 @@ formEndpoint: "https://script.google.com/macros/s/REPLACE_ME/exec"
 - Фото моделей: положите финальные WebP/JPG в `assets/img/models` и обновите пути `image` и `imageFallback` в `data.models.js`.
 - Логотипы лежат в `assets/img/logo`.
 
-Сейчас карточки моделей используют переданные фото H8, H10 и U5 из `assets/img/models`. При замене сохраните тот же набор WebP/JPG или обновите пути в `data.models.js`.
+Сейчас карточки моделей используют переданные фото H8, H10 и U5 из `assets/img/models`. При замене сохраните тот же набор WebP/JPG или обновите пути в `data.models.js`. Файлы, которые не подключены из HTML, CSS или data/config JS, не попадают в интерфейс и могут быть исключены из production-пакета.
 
 ## Карта и аналитика
 
@@ -43,14 +48,9 @@ formEndpoint: "https://script.google.com/macros/s/REPLACE_ME/exec"
 - Для кнопки внешней карты заполните `mapExternalUrl`; если поле пустое, fallback строит ссылку на поиск адреса в Яндекс Картах.
 - Для Яндекс Метрики заполните `yandexMetrikaId`. При пустом ID счетчик не подключается, а вызовы `trackEvent` остаются безопасными.
 
-## SEO перед публикацией
+## SEO
 
-В шаблоне используется placeholder-домен `https://ponyride.example/`. Перед деплоем замените его в:
-
-- canonical и Open Graph URL в `index.html`, `privacy.html`, `consent.html`;
-- `og:image` в `index.html`;
-- `robots.txt`;
-- `sitemap.xml`.
+Canonical, Open Graph URL, `robots.txt` и `sitemap.xml` настроены на production-домен `https://www.ponyride.ru/`. При переносе сайта на другой домен обновите эти значения вместе.
 
 ## Деплой
 
@@ -59,14 +59,16 @@ formEndpoint: "https://script.google.com/macros/s/REPLACE_ME/exec"
 1. Импортируйте папку как статический проект.
 2. Build command оставьте пустым.
 3. Output directory оставьте корнем проекта.
-4. После публикации замените placeholder URL и проверьте форму, карту, OG и Lighthouse.
+4. Добавьте `GOOGLE_APPS_SCRIPT_URL` в Environment Variables.
+5. После публикации проверьте форму, карту, OG и Lighthouse.
 
 ### GitHub Pages
 
 1. Опубликуйте содержимое корня проекта из выбранной ветки.
 2. Убедитесь, что `index.html`, `privacy.html`, `consent.html`, `assets`, `robots.txt` и `sitemap.xml` доступны по финальному URL.
-3. Замените placeholder URL на production-домен.
+3. Проверьте production-домен в canonical, Open Graph, `robots.txt` и `sitemap.xml`.
+4. Для бронирования подключите внешний backend с тем же контрактом `POST /api/booking`: сам GitHub Pages Vercel Function не исполняет.
 
 ## QA
 
-Проверьте header, CTA, автоподстановку модели в форме, checkbox другого города РБ, ошибки имени/телефона/согласия, пустой endpoint, fallback карты и отображение на ширинах 360, 390, 768, 1024, 1366 и 1440 px.
+Проверьте header, CTA, автоподстановку модели в форме, checkbox другого города РБ, ошибки имени/телефона/согласия, сбой `/api/booking`, fallback карты и отображение на ширинах 360, 390, 768, 1024, 1366 и 1440 px.

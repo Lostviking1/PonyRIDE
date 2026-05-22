@@ -98,13 +98,6 @@
       media.append(image);
 
       const body = create("div", "model-body");
-      const shiftRow = create("div", "shift-row");
-      if (model.shiftFit && model.shiftFit !== "УДАЛИТЬ!!!") {
-        shiftRow.append(create("p", "shift-fit", model.shiftFit));
-      }
-      if (shiftRow.childElementCount) {
-        body.append(shiftRow);
-      }
       body.append(create("h3", "", model.name));
       body.append(create("p", "model-highlight", model.highlight));
       body.append(create("p", "model-fit", `Для чего: ${model.bestFor}.`));
@@ -307,7 +300,7 @@
     if (config.mapEmbedUrl) {
       const frame = document.createElement("iframe");
       frame.src = config.mapEmbedUrl;
-      frame.loading = "eager";
+      frame.loading = "lazy";
       frame.title = "Карта проезда к Pony RIDE";
       frame.referrerPolicy = "no-referrer-when-downgrade";
       panel.append(frame);
@@ -476,33 +469,28 @@
         return;
       }
 
-      if (!String(config.formEndpoint || "").trim()) {
-        status("Форма временно не настроена. Напишите нам в Telegram или позвоните.", "error");
-        window.trackEvent("form_submit_error", { reason: "endpoint_not_configured" });
-        return;
-      }
-
       submitButton.disabled = true;
       submitButton.textContent = "Отправляем...";
       status("Отправляем заявку...", "pending");
 
       try {
-        const response = await fetch(config.formEndpoint, {
+        const response = await fetch("/api/booking", {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
           },
           body: JSON.stringify(payloadFromForm(form))
         });
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok || !result.ok) {
+          throw new Error(result.error || `HTTP ${response.status}`);
         }
         form.reset();
         toggleCityField();
         status("Заявка отправлена. Мы свяжемся с вами для уточнения модели и времени выдачи.", "success");
         window.trackEvent("form_submit_success");
       } catch (error) {
-        status("Не удалось отправить заявку. Попробуйте еще раз или напишите нам в Telegram.", "error");
+        status("Не удалось записать заявку. Проверьте соединение и попробуйте еще раз или напишите нам в Telegram.", "error");
         window.trackEvent("form_submit_error", { reason: "network_or_server" });
       } finally {
         submitButton.disabled = false;

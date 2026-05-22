@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://ponyride.example/sitemap.xml
+Sitemap: https://www.ponyride.ru/sitemap.xml
