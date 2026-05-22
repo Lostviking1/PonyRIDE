@@ -15,7 +15,7 @@ window.PONY_RIDE_CONFIG = {
   city: "Уфа",
   region: "Республика Башкортостан",
 
-  formEndpoint: "",
+  formEndpoint: "https://script.google.com/macros/s/AKfycbxNnIQNZbOhrsXXcHF42rLqu8z4WvGEpS_oEWRAFAduwy7qUPLUMr3vrl-WT_h2fpBn/exec",
   mapEmbedUrl: "https://yandex.ru/map-widget/v1/?text=%D0%A3%D1%84%D0%B0%2C%20%D1%83%D0%BB.%20%D0%9C.%20%D0%A0%D1%8B%D0%BB%D1%8C%D1%81%D0%BA%D0%BE%D0%B3%D0%BE%2C%202&z=16",
   mapExternalUrl: "https://yandex.ru/maps/?text=%D0%A3%D1%84%D0%B0%2C%20%D1%83%D0%BB.%20%D0%9C.%20%D0%A0%D1%8B%D0%BB%D1%8C%D1%81%D0%BA%D0%BE%D0%B3%D0%BE%2C%202",
 
