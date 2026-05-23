@@ -22,6 +22,7 @@
   };
 
   const price = (value) => new Intl.NumberFormat("ru-RU").format(value);
+  const money = (value) => `${price(value)} ₽`;
 
   window.trackEvent = function trackEvent(eventName, params = {}) {
     if (window.ym && config.yandexMetrikaId) {
@@ -246,6 +247,143 @@
         nameInput.focus();
       }
     }, 260);
+  };
+
+  const focusBookingName = () => {
+    const nameInput = document.querySelector("#name");
+    window.setTimeout(() => {
+      if (nameInput) {
+        nameInput.focus();
+      }
+    }, 260);
+  };
+
+  const scrollToBooking = () => {
+    const booking = document.querySelector("#booking");
+    if (booking) {
+      booking.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
+  const startTestDrive = () => {
+    const form = document.querySelector("#booking-form");
+    if (!form) {
+      return;
+    }
+
+    if (form.elements.model && !form.elements.model.value) {
+      form.elements.model.value = "consultation";
+      clearError(form.elements.model);
+    }
+    if (form.elements.rentalPurpose) {
+      form.elements.rentalPurpose.value = "test_drive";
+      clearError(form.elements.rentalPurpose);
+    }
+    if (form.elements.comment && !form.elements.comment.value.trim()) {
+      form.elements.comment.value = "Хочу бесплатный тест-драйв";
+    }
+
+    window.trackEvent("click_test_drive");
+    scrollToBooking();
+    focusBookingName();
+  };
+
+  const setupTestDriveCtas = () => {
+    document.querySelectorAll("[data-test-drive]").forEach((link) => {
+      link.addEventListener("click", (event) => {
+        event.preventDefault();
+        startTestDrive();
+      });
+    });
+  };
+
+  const setupCalculator = () => {
+    const ORDER_PRICE = 200;
+    const TRANSPORT = {
+      maikaolin: { ordersPerHour: 3.8, dailyExpense: 700, hourlyExpense: 0 },
+      bike: { ordersPerHour: 2.2, dailyExpense: 0, hourlyExpense: 0 },
+      car: { ordersPerHour: 3.0, dailyExpense: 0, hourlyExpense: 150 },
+      walk: { ordersPerHour: 1.5, dailyExpense: 0, hourlyExpense: 0 }
+    };
+
+    const hoursSlider = document.querySelector("#work-hours");
+    const daysSlider = document.querySelector("#work-days");
+    const hoursOutput = document.querySelector("#work-hours-output");
+    const daysOutput = document.querySelector("#work-days-output");
+    const resultNodes = {
+      maikaolin: document.querySelector("[data-result='maikaolin-period']"),
+      bike: document.querySelector("[data-result='bike-period']"),
+      car: document.querySelector("[data-result='car-period']"),
+      walk: document.querySelector("[data-result='walk-period']"),
+      carExpense: document.querySelector("[data-result='car-expense']")
+    };
+    if (!hoursSlider || !daysSlider || !hoursOutput || !daysOutput || Object.values(resultNodes).some((node) => !node)) {
+      return;
+    }
+
+    const setRangeProgress = (range) => {
+      const min = Number(range.min) || 0;
+      const max = Number(range.max) || 100;
+      const value = Number(range.value) || min;
+      const progress = ((value - min) / (max - min)) * 100;
+      range.style.setProperty("--progress", `${progress}%`);
+    };
+
+    const calculate = (transport, hours, workDays) => {
+      const grossDaily = hours * transport.ordersPerHour * ORDER_PRICE;
+      const expenseDaily = transport.dailyExpense + (hours * transport.hourlyExpense);
+      const netDaily = grossDaily - expenseDaily;
+      return {
+        expenseDaily,
+        netPeriod: Math.round(netDaily * workDays)
+      };
+    };
+
+    const updateValue = (node, value) => {
+      node.textContent = money(value);
+      node.classList.remove("is-updating");
+      window.requestAnimationFrame(() => node.classList.add("is-updating"));
+    };
+
+    const update = () => {
+      const hours = Number(hoursSlider.value) || 8;
+      const workDays = Number(daysSlider.value) || 22;
+      const maikaolin = calculate(TRANSPORT.maikaolin, hours, workDays);
+      const bike = calculate(TRANSPORT.bike, hours, workDays);
+      const car = calculate(TRANSPORT.car, hours, workDays);
+      const walk = calculate(TRANSPORT.walk, hours, workDays);
+
+      hoursOutput.textContent = String(hours);
+      daysOutput.textContent = String(workDays);
+      setRangeProgress(hoursSlider);
+      setRangeProgress(daysSlider);
+      updateValue(resultNodes.maikaolin, maikaolin.netPeriod);
+      updateValue(resultNodes.bike, bike.netPeriod);
+      updateValue(resultNodes.car, car.netPeriod);
+      updateValue(resultNodes.walk, walk.netPeriod);
+      resultNodes.carExpense.textContent = `Учтены расходы на бензин и обслуживание: ${money(car.expenseDaily)}/день.`;
+    };
+
+    [hoursSlider, daysSlider].forEach((slider) => {
+      slider.addEventListener("input", update);
+    });
+    [hoursSlider, daysSlider].forEach((slider) => {
+      slider.addEventListener("change", () => {
+        window.trackEvent("calculator_change", {
+          hours: Number(hoursSlider.value) || 8,
+          workDays: Number(daysSlider.value) || 22
+        });
+      });
+    });
+    update();
+  };
+
+  const setupFloatingTelegram = () => {
+    const link = document.querySelector("[data-floating-telegram]");
+    if (!link) {
+      return;
+    }
+    link.addEventListener("click", () => window.trackEvent("click_floating_telegram"));
   };
 
   const buildSchemas = () => {
@@ -474,7 +612,7 @@
       status("Отправляем заявку...", "pending");
 
       try {
-        const response = await fetch("/api/booking", {
+        const response = await fetch("/api/booking.php", {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
@@ -567,6 +705,9 @@
   buildSchemas();
   renderMap();
   setupForm();
+  setupTestDriveCtas();
+  setupCalculator();
+  setupFloatingTelegram();
   setupNavigation();
   setupTracking();
   loadMetrika();

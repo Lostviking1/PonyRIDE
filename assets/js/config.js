@@ -6,12 +6,12 @@ window.PONY_RIDE_CONFIG = {
 
   phoneDisplay: "+7 (965) 936-59-30",
   phoneHref: "tel:+79659365930",
-  telegramDisplay: "t.me/PonyRIDE_official",
-  telegramHref: "https://t.me/PonyRIDE_official",
+  telegramDisplay: "@PonyRide_admin",
+  telegramHref: "https://t.me/PonyRide_admin",
   email: "ponyride_official@mail.ru",
   emailHref: "mailto:ponyride_official@mail.ru",
 
-  address: 'Республика Башкортостан, Уфа, улица Сабира Лукманова, 5/2 (Микрорайон "Сипайлово")',
+  address: 'Уфа, ул. Сабира Лукманова, 5/2\n(Микрорайон "Сипайлово")',
   city: "Уфа",
   region: "Республика Башкортостан",
 

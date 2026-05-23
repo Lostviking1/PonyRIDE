@@ -1,4 +1,4 @@
-const SPREADSHEET_ID = "1NRYYeSLX6UH2dXW2GS5DxMLblYqTwDzLXednwVExYgs";
+const SPREADSHEET_ID = "1F4eky9iPFbJoWFVBX_4cXTM-zyJKE26OMM7olQUwGek";
 const SHEET_NAME = "Лист1";
 const NOTIFY_EMAIL = "ponyride_official@mail.ru";
 const HEADERS = [
@@ -15,6 +15,14 @@ const HEADERS = [
   "Источник",
   "Дата с сайта"
 ];
+
+function doGet() {
+  return json_({
+    ok: true,
+    service: "Pony RIDE booking endpoint",
+    method: "POST"
+  });
+}
 
 function doPost(event) {
   try {

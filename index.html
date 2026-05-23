@@ -15,11 +15,11 @@
     <meta property="og:image" content="https://www.ponyride.ru/assets/img/hero/hero-main.jpg">
     <meta property="og:url" content="https://www.ponyride.ru/">
     <meta property="og:locale" content="ru_RU">
-    <link rel="stylesheet" href="assets/css/styles.css?v=20260522-booking2">
-    <script src="assets/js/config.js?v=20260522-booking2" defer></script>
-    <script src="assets/js/data.models.js?v=20260522-booking2" defer></script>
-    <script src="assets/js/data.faq.js?v=20260522-booking2" defer></script>
-    <script src="assets/js/script.js?v=20260522-booking2" defer></script>
+    <link rel="stylesheet" href="assets/css/styles.css?v=20260523-calc-window-fix">
+    <script src="assets/js/config.js?v=20260523-tg-admin" defer></script>
+    <script src="assets/js/data.models.js?v=20260523-conversion" defer></script>
+    <script src="assets/js/data.faq.js?v=20260523-conversion" defer></script>
+    <script src="assets/js/script.js?v=20260523-clean-income" defer></script>
     <script id="local-business-schema" type="application/ld+json"></script>
     <script id="faq-schema" type="application/ld+json"></script>
   </head>
@@ -35,12 +35,13 @@
           <span></span><span></span><span></span>
         </button>
         <nav class="site-nav" id="site-nav" aria-label="Навигация по странице">
+          <a href="#calculator">Выгода</a>
           <a href="#models">Модели</a>
           <a href="#terms">Условия</a>
           <a href="#faq">FAQ</a>
           <a href="#contacts">Контакты</a>
         </nav>
-        <a class="button header-book" href="#booking" data-track="click_header_book">Забронировать</a>
+        <a class="button header-book" href="#booking" data-test-drive data-track="click_header_test_drive">Тест-драйв</a>
       </div>
     </header>
 
@@ -51,8 +52,8 @@
           <img src="assets/img/hero/hero-main.jpg" width="2432" height="1368" alt="Курьер Pony RIDE на электровелосипеде в городе" fetchpriority="high">
         </picture>
         <div class="container hero-content">
-          <h1 id="hero-title">Аренда электровелосипедов <span>в Уфе</span></h1>
-          <p class="hero-lead">Великолепная тройка: Maikaolin H8, U5, H10. Созданы для доставки, подработки и просто быстрых перемещений по городу. <b>Сдаём от 1 недели.</b></p>
+          <h1 id="hero-title">Аренда электровелосипедов <span>для курьеров в Уфе</span></h1>
+          <p class="hero-lead">Топовые Maikaolin H10, U5, H8 для доставки и смен без лишней зарядки. <b>Бесплатный тест-драйв перед арендой.</b></p>
           <div class="hero-facts" aria-label="Ключевые условия аренды">
             <span>
               <img src="assets/img/icons/calendar.png" alt="Календарь" class="hero-fact-icon">
@@ -68,8 +69,77 @@
             </span>
           </div>
           <div class="hero-actions">
-            <a class="button" href="#booking" data-track="click_hero_book">Забронировать</a>
+            <a class="button" href="#booking" data-test-drive data-track="click_hero_test_drive">Попробовать бесплатно</a>
             <a class="hero-model-link" href="#models">Смотреть модели <span aria-hidden="true">→</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section calculator-section" id="calculator" aria-labelledby="calculator-title">
+        <div class="container calculator-layout">
+          <div class="calculator-copy reveal">
+            <h2 id="calculator-title">Сколько можно заработать за период аренды</h2>
+            <p>Аренда начинается от 7 дней. Настройте смену и рабочие дни, чтобы увидеть чистый доход с Maikaolin и сравнить его с другими вариантами.</p>
+          </div>
+          <div class="calculator-panel reveal" data-calculator>
+            <div class="calculator-controls">
+              <div class="range-control">
+                <label class="range-label" for="work-hours">
+                  <span>Смена</span>
+                  <strong><output id="work-hours-output" for="work-hours">8</output> ч</strong>
+                </label>
+                <input id="work-hours" class="range-input" type="range" min="4" max="14" value="8" step="1">
+              </div>
+              <div class="range-control">
+                <label class="range-label" for="work-days">
+                  <span>Дней</span>
+                  <strong><output id="work-days-output" for="work-days">22</output> дн.</strong>
+                </label>
+                <input id="work-days" class="range-input" type="range" min="7" max="30" value="22" step="1">
+              </div>
+              <p class="range-help">Аренда от 7 дней. Для месяца обычно считают 22–26 рабочих дней.</p>
+            </div>
+            <div class="calculator-results" aria-live="polite">
+              <article class="calculator-card is-best" data-transport="maikaolin">
+                <span class="calculator-badge">Самый выгодный</span>
+                <h3>Электровелосипед Maikaolin</h3>
+                <p class="calculator-label">Чистый доход</p>
+                <strong class="calculator-value" data-result="maikaolin-period">0 ₽</strong>
+                <p class="calculator-card-note">Уже вычтена аренда 700 ₽/день.</p>
+              </article>
+              <article class="calculator-card" data-transport="bike">
+                <h3>Обычный велосипед</h3>
+                <p class="calculator-label">Чистый доход</p>
+                <strong class="calculator-value" data-result="bike-period">0 ₽</strong>
+                <p class="calculator-card-note">Быстрее наступает усталость, меньше заказов.</p>
+              </article>
+              <article class="calculator-card" data-transport="car">
+                <h3>Автомобиль</h3>
+                <p class="calculator-label">Чистый доход</p>
+                <strong class="calculator-value" data-result="car-period">0 ₽</strong>
+                <p class="calculator-card-note" data-result="car-expense">Учтены расходы на бензин и обслуживание.</p>
+              </article>
+              <article class="calculator-card" data-transport="walk">
+                <h3>Пешком</h3>
+                <p class="calculator-label">Чистый доход</p>
+                <strong class="calculator-value" data-result="walk-period">0 ₽</strong>
+                <p class="calculator-card-note">Быстрее наступает усталость, меньше заказов.</p>
+              </article>
+            </div>
+            <a class="button calculator-cta" href="#booking" data-test-drive data-track="click_calculator_test_drive"><span>Забронировать Maikaolin</span> <span>на тест-драйв</span></a>
+            <p class="calculator-note">Расчет примерный: фактический доход зависит от сервиса, района, погоды и количества заказов.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section referral-section" aria-labelledby="referral-title">
+        <div class="container">
+          <div class="referral-card reveal">
+            <div>
+              <h2 id="referral-title">Приведи друга — 2 дня бесплатно</h2>
+              <p>Друг берет аренду от 7 дней. Бонус начислим после оплаты и выдачи велосипеда.</p>
+            </div>
+            <a class="button button-light" href="#booking" data-test-drive data-track="click_referral">Попробовать бесплатно</a>
           </div>
         </div>
       </section>
@@ -129,7 +199,7 @@
                     <p>через ЭДО</p>
                   </div>
                 </div>
-                <p>Быстрое оформление по договору, оплата картой и выдача в день обращения в центре Уфы.</p>
+                <p>Быстрое оформление по договору, оплата картой и выдача в день обращения.</p>
               </div>
             </article>
           </div>
@@ -213,6 +283,7 @@
                   <select id="rental-purpose" name="rentalPurpose" aria-describedby="rental-purpose-error" required>
                     <option value="">Не выбрано</option>
                     <option value="delivery">Для доставки</option>
+                    <option value="test_drive">Бесплатный тест-драйв</option>
                     <option value="city_rides">Для поездок на работу / по городу</option>
                     <option value="rent_to_own">Интересует аренда с правом выкупа</option>
                     <option value="consultation">Нужна консультация</option>
@@ -256,13 +327,19 @@
             <div class="section-heading">
               <h2 id="contacts-title">Как нас найти</h2>
             </div>
-            <p class="address-line"><img src="assets/img/icons/contact-address.png" width="48" height="48" alt=""><strong data-config-text="address">Республика Башкортостан, Уфа, улица Сабира Лукманова, 5/2 (Микрорайон "Сипайлово")</strong></p>
+            <p class="address-line">
+              <img src="assets/img/icons/contact-address.png" width="48" height="48" alt="">
+              <span class="address-text">
+                <strong>Уфа, ул. Сабира Лукманова, 5/2</strong>
+                <span>Микрорайон "Сипайлово"</span>
+              </span>
+            </p>
             <div class="section-heading">
             <h2 class="contact-title">Как с нами связаться</h2>
             </div>
             <div class="contact-links">
               <a data-contact="phone" href="tel:+79659365930"><img src="assets/img/icons/contact-phone.png" width="48" height="48" alt=""><span data-config-text="phoneDisplay">+7 (965) 936-59-30</span></a>
-              <a data-contact="telegram" href="https://t.me/PonyRIDE_official" target="_blank" rel="noreferrer"><img src="assets/img/icons/contact-telegram.png" width="48" height="48" alt=""><span data-config-text="telegramDisplay">t.me/PonyRIDE_official</span></a>
+              <a data-contact="telegram" href="https://t.me/PonyRide_admin" target="_blank" rel="noreferrer"><img src="assets/img/icons/contact-telegram.png" width="48" height="48" alt=""><span data-config-text="telegramDisplay">@PonyRide_admin</span></a>
               <a data-contact="email" href="mailto:ponyride_official@mail.ru"><img src="assets/img/icons/contact-email.png" width="48" height="48" alt=""><span data-config-text="email">ponyride_official@mail.ru</span></a>
             </div>
           </div>
@@ -278,7 +355,21 @@
           <div class="faq-list" id="faq-list"></div>
         </div>
       </section>
+
+      <section class="section reviews-section" id="reviews" aria-labelledby="reviews-title" hidden>
+        <div class="container">
+          <div class="section-heading reveal">
+            <h2 id="reviews-title">Видеоотзывы курьеров</h2>
+          </div>
+          <div class="review-grid" id="review-grid"></div>
+        </div>
+      </section>
     </main>
+
+    <a class="floating-telegram" href="https://t.me/PonyRide_admin" data-contact="telegram" data-floating-telegram target="_blank" rel="noreferrer" aria-label="Написать администратору Pony RIDE в Telegram">
+      <img src="assets/img/icons/contact-telegram.png" width="28" height="28" alt="">
+      <span>Есть H10 на завтра?</span>
+    </a>
 
     <footer class="site-footer">
       <div class="container footer-grid">
@@ -297,7 +388,7 @@
           <h2>Контакты</h2>
           <div class="footer-links">
             <a data-contact="phone" href="tel:+79659365930" data-config-text="phoneDisplay">+7 (965) 936-59-30</a>
-            <a data-contact="telegram" href="https://t.me/PonyRIDE_official" target="_blank" rel="noreferrer" data-config-text="telegramDisplay">t.me/PonyRIDE_official</a>
+            <a data-contact="telegram" href="https://t.me/PonyRide_admin" target="_blank" rel="noreferrer" data-config-text="telegramDisplay">@PonyRide_admin</a>
             <a href="mailto:ponyride_official@mail.ru" data-config-text="email">ponyride_official@mail.ru</a>
             <span data-config-text="address">Республика Башкортостан, Уфа, улица Сабира Лукманова, 5/2 (Микрорайон "Сипайлово")</span>
           </div>

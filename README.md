@@ -18,20 +18,20 @@
 
 ## Форма
 
-Браузер отправляет заявку в Vercel Function `POST /api/booking`. Она проверяет обязательные поля, передает JSON в Google Apps Script и возвращает форме подтвержденный результат записи.
+На обычном PHP-хостинге браузер отправляет заявку в `POST /api/booking.php`. Обработчик проверяет обязательные поля, передает JSON в Google Apps Script и возвращает форме подтвержденный результат записи.
 
 Payload содержит поля `name`, `phone`, `model`, `rentalTerm`, `rentalPurpose`, `fromBashkortostanCity`, `city`, `comment`, `consent`, `source`, `submittedAt`.
 
 1. Замените код Apps Script на содержимое `google-apps-script/booking.gs`.
 2. Разверните Apps Script как Web App и скопируйте URL `/exec`.
-3. В Vercel задайте env var `GOOGLE_APPS_SCRIPT_URL` с этим URL. Шаблон есть в `.env.example`.
-4. Проверьте тестовую заявку на опубликованном preview/production URL.
+3. В `api/booking.php` укажите URL Apps Script `/exec` в `GOOGLE_APPS_SCRIPT_URL`.
+4. Проверьте тестовую заявку на опубликованном сайте.
 
 Apps Script пишет в таблицу с ID `1NRYYeSLX6UH2dXW2GS5DxMLblYqTwDzLXednwVExYgs`, в текущий лист `Лист1`. Если в первой строке нет полного набора колонок, скрипт заполнит заголовки:
 
 `Дата получения`, `Имя`, `Телефон`, `Модель`, `Срок аренды`, `Цель`, `Из другого города РБ`, `Город`, `Комментарий`, `Согласие`, `Источник`, `Дата с сайта`.
 
-Обычный локальный `python -m http.server` показывает статику, но не исполняет `/api/booking`. Для проверки API используйте Vercel preview/deploy или локальный runtime Vercel.
+Обычный локальный `python -m http.server` показывает статику, но не исполняет `/api/booking.php`. Для проверки API нужен PHP-сервер или опубликованный PHP-хостинг.
 
 ## Изображения
 
@@ -54,21 +54,18 @@ Canonical, Open Graph URL, `robots.txt` и `sitemap.xml` настроены на
 
 ## Деплой
 
-### Vercel
+### REG.RU PHP-хостинг
 
-1. Импортируйте папку как статический проект.
-2. Build command оставьте пустым.
-3. Output directory оставьте корнем проекта.
-4. Добавьте `GOOGLE_APPS_SCRIPT_URL` в Environment Variables.
+1. Привяжите домен к услуге хостинга и создайте сайт в панели REG.RU.
+2. Загрузите содержимое корня проекта в корневую папку сайта, сохранив папки `api`, `assets` и `google-apps-script`.
+3. Убедитесь, что хостинг исполняет PHP и что доступен `POST /api/booking.php`.
+4. Подключите SSL для домена и проверьте финальный URL без VPN.
 5. После публикации проверьте форму, карту, OG и Lighthouse.
 
-### GitHub Pages
+### Vercel
 
-1. Опубликуйте содержимое корня проекта из выбранной ветки.
-2. Убедитесь, что `index.html`, `privacy.html`, `consent.html`, `assets`, `robots.txt` и `sitemap.xml` доступны по финальному URL.
-3. Проверьте production-домен в canonical, Open Graph, `robots.txt` и `sitemap.xml`.
-4. Для бронирования подключите внешний backend с тем же контрактом `POST /api/booking`: сам GitHub Pages Vercel Function не исполняет.
+Файл `api/booking.js` сохранен как прежний Vercel Function. Он не нужен для REG.RU, но может использоваться для отдельного preview/deploy на Vercel с env var `GOOGLE_APPS_SCRIPT_URL`.
 
 ## QA
 
-Проверьте header, CTA, автоподстановку модели в форме, checkbox другого города РБ, ошибки имени/телефона/согласия, сбой `/api/booking`, fallback карты и отображение на ширинах 360, 390, 768, 1024, 1366 и 1440 px.
+Проверьте header, CTA, автоподстановку модели в форме, checkbox другого города РБ, ошибки имени/телефона/согласия, сбой `/api/booking.php`, fallback карты и отображение на ширинах 360, 390, 768, 1024, 1366 и 1440 px.
